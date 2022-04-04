@@ -1,0 +1,239 @@
+// 文本超出省略
+.textAbbreviation() {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wrapper {
+  background: #d4ead1;
+  padding: 25px 32px 0;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  margin: 0 auto;
+  width: 80%;
+  min-width: 800px;
+  height: calc(100% - 25px);
+  border-radius: 30px 30px 0 0;
+  background: #fff;
+}
+
+.server,
+.softWare{
+  flex: 1;
+}
+
+.hedge {
+  flex: 0 0 5px;
+  height: calc(100% - 60px);
+  transform: translateY(40px);
+  background: #ddd;
+}
+
+/**
+.fixedWidgets {
+  position: fixed;
+  right: 32px;
+  bottom: 102px;
+  display: flex;
+  z-index: 9999;
+  cursor: pointer;
+  background: #fff;
+  box-shadow: 0 3px 6px -4px #0000001f, 0 6px 16px #00000014, 0 9px 28px 8px #0000000d;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform .3s ease-out;
+  .avatar {
+    width: 44px;
+    height: 44px;
+    background-image: url(~@/assets/clear.svg);
+    background-size: 76%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%;
+    transition: background .3s ease-out;
+    &:hover {
+      background-image: url(~@/assets/clear_hover.svg);
+    }
+  }
+}
+*/
+
+.title {
+  padding-left: 2em;
+  height: 40px;
+  line-height: 40px;
+  h1 {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+}
+
+.mainBox {
+  padding: 1em .5em;
+  height: calc(100% - 40px);
+  overflow: hidden;
+  .listBox {
+    li {
+      line-height: 26px;
+      cursor: default;
+      span {
+        &:first-of-type {
+          color: #000;
+        }
+        &:last-of-type {
+          color: #1a2a3a;
+        }
+      }
+    }
+  }
+  li {
+    position: relative;
+    h3 {
+      font-size: .9375rem;
+      font-weight: 700;
+      line-height: 24px;
+      user-select: none;
+      color: #454141;
+      white-space: pre;
+      word-break: break-all;
+      &:hover {
+        color: #000;
+      }
+      .ipTip {
+        margin-left: 2em;
+        color: #ccc;
+        font-weight: 500;
+      }
+    }
+    .openClass {
+      h3 {
+        color: #000;
+      }
+    }
+    .selectIcon {
+      position: absolute;
+      top: 0;
+      right: 1em;
+      line-height: 24px;
+    }
+    .loading {
+      height: 36px;
+      margin-left: 1em;
+    }
+    &:hover {
+      .selectIcon {
+        opacity: 1 !important;
+      }
+    }
+  }
+  .uploadFileBtn {
+    position: absolute;
+    bottom: 3px;
+    right: 0;
+    transform: translateX(140%);
+  }
+}
+
+.analysed {
+  position: relative;
+  margin-left: 1em;
+  font-weight: 500;
+  font-size: .75rem;
+  color: rgba(0, 165, 0, .84);
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 4px;
+    height: 4px;
+    transform: translate(-150%, -50%);
+    border-radius: 50%;
+    background: rgba(0, 165, 0, .84);
+  }
+}
+
+.footer {
+  line-height: 25px;
+  text-align: center;
+  font-size: .75rem;
+  color: #1a2a3a;
+}
+
+/** ant Design */
+// 取消 form 表单项的下外边距
+:global .ant-form-item {
+  margin-bottom: 0;
+}
+
+// 设置表单项提醒内容在控件右侧
+// :global .ant-form-item-control {
+//   flex-direction: row;
+// }
+
+// 设置表单项控件长度
+:global .ant-form-item-control-input {
+  min-width: 73%;
+  max-width: 80%;
+}
+
+// 设置提醒容器行高和外边距
+:global .ant-form-item-with-help  {
+  .ant-form-item-explain {
+    flex: 1;
+    // margin-left: .5em;
+    line-height: 32px;
+    white-space: pre;
+  }
+}
+
+:global .ant-form-horizontal {
+  .ant-form-item-label {
+    min-width: 80px;
+  }
+}
+
+// 文件上传块里添加外部按钮
+:global .ant-upload-btn {
+  position: relative;
+  .ant-upload-text {
+    width: 100%;
+    color: #aaa !important;
+    .textAbbreviation;
+  }
+
+}
+
+// form label 字段必须标记
+:global .ant-form-item-label > label:not(.ant-form-item-required)::before {
+  content: '*';
+  display: inline-block;
+  margin-right: 4px;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  opacity: 0;
+}
+
+// 项目仓库地址宽度
+// :global .ant-form-item-control-input-content {
+//   input[name] {
+//     width: 330px;
+//   }
+// }
+
+// 自定义 notification 通知框背景颜色
+:global .ant-notification-notice-success {
+  background: #f6ffed;
+  // border: 1px solid #b7eb8f;
+}
+
+:global .ant-notification-notice-error {
+  background: #fff2f0;
+  // border: 1px solid #ffccc7;
+}
+
