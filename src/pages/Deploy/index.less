@@ -33,35 +33,6 @@
   background: #ddd;
 }
 
-/**
-.fixedWidgets {
-  position: fixed;
-  right: 32px;
-  bottom: 102px;
-  display: flex;
-  z-index: 9999;
-  cursor: pointer;
-  background: #fff;
-  box-shadow: 0 3px 6px -4px #0000001f, 0 6px 16px #00000014, 0 9px 28px 8px #0000000d;
-  border-radius: 50%;
-  transform: scale(0);
-  transition: transform .3s ease-out;
-  .avatar {
-    width: 44px;
-    height: 44px;
-    background-image: url(~@/assets/clear.svg);
-    background-size: 76%;
-    background-repeat: no-repeat;
-    background-position: center;
-    border-radius: 50%;
-    transition: background .3s ease-out;
-    &:hover {
-      background-image: url(~@/assets/clear_hover.svg);
-    }
-  }
-}
-*/
-
 .title {
   padding-left: 2em;
   height: 40px;
@@ -106,7 +77,8 @@
       .ipTip {
         margin-left: 2em;
         color: #ccc;
-        font-weight: 500;
+        font-family: 'pfl';
+        font-weight: 400;
       }
     }
     .openClass {
@@ -155,6 +127,15 @@
     border-radius: 50%;
     background: rgba(0, 165, 0, .84);
   }
+}
+
+.logLabel {
+  margin-bottom: 0;
+}
+
+.logBody {
+  white-space: pre-line;
+  word-break: break-all;
 }
 
 .footer {
@@ -237,3 +218,13 @@
   // border: 1px solid #ffccc7;
 }
 
+// 时间线重设外边距
+:global .ant-timeline-item {
+  padding: 0;
+}
+
+// 自定义时间线表头大小
+:global .ant-timeline-item-head {
+  width: 12px;
+  height: 12px;
+}
