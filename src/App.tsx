@@ -1,5 +1,3 @@
-import 'antd/dist/antd.min.css';
-
 import Deploy from "@/pages/Deploy";
 
 function App() {
