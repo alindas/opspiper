@@ -1,6 +1,19 @@
 
 import { useEffect, useMemo, useState } from 'react';
-import { AutoComplete, Button, Empty, Form, Input, message, notification, Popconfirm, Select, Space, Timeline, Upload } from 'antd';
+import {
+  AutoComplete,
+  Button,
+  Empty,
+  Form,
+  Input,
+  message,
+  notification,
+  Popconfirm,
+  Select,
+  Space,
+  Timeline,
+  Upload
+} from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 
@@ -635,13 +648,14 @@ export default function Deploy() {
     </li>
   )
 
+  // 增加本地日志记录
   const renderOperationHistory = useMemo(() => {
     const logData = JSON.parse(localStorage.getItem('log')) as TLog[];
     if (!Array.isArray(logData)) {
       console.error('读取本地日志文件错误');
-      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description='暂无日志记录'/>;
+      return <Empty image='/img/empty.png' description='暂无日志记录' />;
     };
-    return logData.length == 0 ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description='暂无日志记录'/>
+    return logData.length == 0 ? <Empty image='/img/empty.png' description='暂无日志记录' />
       : <Timeline>
         {
           logData.map((log, index) =>

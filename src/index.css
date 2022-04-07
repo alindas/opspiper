@@ -2,12 +2,12 @@
 
 @font-face {
   font-family: 'pfl';
-  src: url('../public/fonts/pingfangsc-light.ttf');
+  src: url('../public/font/pingfangsc-light.ttf');
 }
 
 @font-face {
   font-family: 'pfr';
-  src: url('../public/fonts/pingfangsc-regular.ttf');
+  src: url('../public/font/pingfangsc-regular.ttf');
 }
 
 body {
