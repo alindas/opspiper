@@ -347,7 +347,7 @@ export default function Deploy() {
     }
     let temp = prefixLog ?? [];
     temp.unshift({
-      time: getFormateDate('YYYY-MM-dd hh:mm:ss'),
+      time: getFormateDate('yyyy-MM-dd hh:mm:ss'),
       type,
       desc
     });
