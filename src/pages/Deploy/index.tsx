@@ -118,7 +118,7 @@ const guideSteps = [
   },
   {
     element: '#intro-step5',
-    intro: '所有的项目操作记录都会保存到本地，鼠标滑动到屏幕最右侧边可将其唤出'
+    intro: '所有的项目操作记录都会保存到本地，鼠标滑动到屏幕最右侧边可将其唤出。\n（考虑到实际应用，数据上限为 30 条）'
   },
 ]
 
@@ -407,6 +407,7 @@ export default function Deploy() {
       type,
       desc
     });
+    temp.length > 30 && temp.pop();
     localStorage.setItem('log', JSON.stringify(temp))
     setLogCount(logCount + 1);
   }
