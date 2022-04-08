@@ -221,6 +221,7 @@ export default function Deploy() {
           notification.success({
             message: `${comment}成功`,
             description: <span>软件：<strong>{name}</strong> 在 <strong>{Server.note}</strong> 成功{comment}</span>,
+            duration: 1.5
           });
           queryServerProject(Server);
           recordLog(handleType.buttonType, `在${Server.note}上${comment}了软件${name}`);
@@ -229,6 +230,7 @@ export default function Deploy() {
           notification.error({
             message: `${comment}失败`,
             description: <span>服务器：<strong>{Server.note}</strong> 处理失败 </span>,
+            duration: 1.5
           });
         }
         setTimeout(() => setHandleType({ ...handleType, isLoading: false }), 500);
@@ -237,6 +239,7 @@ export default function Deploy() {
         notification.error({
           message: '请求失败',
           description: error,
+          duration: 1.5
         });
         setHandleType({ ...handleType, isLoading: false });
       })
@@ -252,6 +255,7 @@ export default function Deploy() {
           notification.success({
             message: `${comment}成功`,
             description: <span>软件：<strong>{name}</strong> 在 <strong>{Server.note}</strong> 已{comment}</span>,
+            duration: 1.5
           });
           queryServerProject(Server);
           recordLog(handleType.buttonType, `在${Server.note}上${comment}了软件${name}`);
@@ -260,6 +264,7 @@ export default function Deploy() {
           notification.error({
             message: `${comment}失败`,
             description: <span>服务器：<strong>{Server.note}</strong> 上不存在软件 <strong>{name}</strong></span>,
+            duration: 1.5
           });
         }
         setTimeout(() => setHandleType({ ...handleType, isLoading: false }), 500);
@@ -268,6 +273,7 @@ export default function Deploy() {
         notification.error({
           message: '请求失败',
           description: error,
+          duration: 1.5
         });
         setHandleType({ ...handleType, isLoading: false });
       })
@@ -295,7 +301,8 @@ export default function Deploy() {
         if (!response.ok) {
           notification.error({
             message: '请求失败',
-            description: '目标软件包资源丢失'
+            description: '目标软件包资源丢失',
+            duration: 1.5
           });
           setHandleType({ ...handleType, isLoading: false });
           return;
