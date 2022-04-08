@@ -25,6 +25,7 @@ import FoldingBox from '@/components/FoldingBox';
 import { getFormateDate, getParentNode } from '@/utils/common';
 import Loading from '@/components/Loading';
 import SideDrawer from '@/components/SideDrawer';
+import emptyPic from '@/assets/empty.png';
 
 const { Option } = Select;
 
@@ -695,9 +696,9 @@ export default function Deploy() {
     const logData = JSON.parse(localStorage.getItem('log')) as TLog[];
     if (!Array.isArray(logData)) {
       console.error('读取本地日志文件错误');
-      return <Empty image='/img/empty.png' description='暂无日志记录' />;
+      return <Empty image={emptyPic} description='暂无日志记录' />;
     };
-    return logData.length == 0 ? <Empty image='/img/empty.png' description='暂无日志记录' />
+    return logData.length == 0 ? <Empty image={emptyPic} description='暂无日志记录' />
       : <Timeline>
         {
           logData.map((log, index) =>
