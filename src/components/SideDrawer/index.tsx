@@ -10,7 +10,7 @@ export default function SideDrawer(props: any) {
     <div>
       <div
         id='intro-step5'
-        className={style.placeholderOutside}
+        className={style.placeholder}
         onMouseEnter={() => !ifShowDrawer && setIfShowDrawer(true)}
       />
       <Drawer
@@ -19,8 +19,7 @@ export default function SideDrawer(props: any) {
         onClose={() => setIfShowDrawer(false)}
         visible={ifShowDrawer}
       >
-        <div className={style.container}>
-          <div className={style.placeholderInside} onMouseEnter={() => setIfShowDrawer(false)}/>
+        <div className={style.container} onMouseLeave={() => setIfShowDrawer(false)}>
           { props.children }
         </div>
       </Drawer>
