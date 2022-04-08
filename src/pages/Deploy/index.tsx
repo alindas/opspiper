@@ -16,6 +16,8 @@ import {
 } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import { Steps } from "intro.js-react";
+import "intro.js/introjs.css";
 
 import style from './index.less';
 import { generalQuery, everQuery } from '@/services';
@@ -92,6 +94,33 @@ const typeToColor = (type: TButton) => {
   }
 }
 
+const guideSteps = [
+  {
+    element: '#intro-step1',
+    intro: '这里是服务器列表。\n选择对应的服务器后才能继续后续的项目安装、更新等工作'
+  },
+  {
+    element: '#intro-step2',
+    intro: '这里是本地文件上传区域。\n 大多数的操作都在这里执行'
+  },
+  {
+    element: '#intro-step2 .ant-space',
+    intro: '安装和升级操作需要提供软件包，其他操作只需要提供正确的项目名称即可'
+  },
+  {
+    element: '#intro-step3',
+    intro: '这里展示的是储存到发布仓库区的项目，可直接拿来用'
+  },
+  {
+    element: '#intro-step4',
+    intro: '测试仓库和发布仓库只是仓库名称不同，功能性是一样的'
+  },
+  {
+    element: '#intro-step5',
+    intro: '所有的项目操作记录都会保存到本地，鼠标滑动到屏幕最右侧边可将其唤出'
+  },
+]
+
 export default function Deploy() {
   const [serverList, setServerList] = useState<TServer[]>([]);
   const [Server, setServer] = useState<TServer>(InitialSERVER);
@@ -100,6 +129,7 @@ export default function Deploy() {
   const [handleType, setHandleType] = useState<HandleType>({ softwareType: '', buttonType: '', softwareName: '', isLoading: false }); // 软件包类型，按钮类型，软件名称，是否加载中
   const [serverProject, setServerProject] = useState<TServerProject[]>([]);
   const [logCount, setLogCount] = useState(-1);
+  const [stepsEnabled, setStepsEnabled] = useState(false); // 用户功能向导是否可见
 
   const [localForm] = Form.useForm();
 
@@ -114,6 +144,11 @@ export default function Deploy() {
       .then((res: Response | TServer[]) => {
         if (Array.isArray(res)) {
           setServerList(res);
+          // 用户向导
+          const isBaby = localStorage.getItem('ISB');
+          if (isBaby === null) {
+            setStepsEnabled(true);
+          }
         }
       })
       .catch(err => console.warn(err))
@@ -522,7 +557,7 @@ export default function Deploy() {
   )
 
   const renderLocalSoftWare = (
-    <li>
+    <li id='intro-step2'>
       <FoldingBox
         title={<h3>1. 本地软件包</h3>}
         content={localSoftWareContentNode}
@@ -617,7 +652,7 @@ export default function Deploy() {
   });
 
   const renderReleaseRepositories = (
-    <li>
+    <li id='intro-step3'>
       <FoldingBox
         title={<h3>2. 发布仓库</h3>}
         content={
@@ -633,7 +668,7 @@ export default function Deploy() {
   )
 
   const renderTestRepositories = (
-    <li>
+    <li id='intro-step4'>
       <FoldingBox
         title={<h3>3. 测试仓库</h3>}
         content={
@@ -677,7 +712,7 @@ export default function Deploy() {
           </div>
           <div className={style.mainBox}>
             <Scrollbars>
-              <ul>{renderServerList}</ul>
+              <ul id='intro-step1'>{renderServerList}</ul>
             </Scrollbars>
           </div>
         </div>
@@ -701,6 +736,23 @@ export default function Deploy() {
             {renderOperationHistory}
           </div>
         </SideDrawer>
+        <Steps
+          enabled={stepsEnabled}
+          steps={guideSteps}
+          initialStep={0}
+          onExit={() => setStepsEnabled(false)}
+          onComplete={() => localStorage.setItem('ISB', 'false')}
+          options={{
+            nextLabel: '下一个',
+            prevLabel: '上一个',
+            doneLabel: '了解了',
+            hidePrev: true,
+            exitOnEsc: false,
+            exitOnOverlayClick: false,
+            disableInteraction: true,
+            showBullets: false
+          }}
+        />
       </section>
       <footer className={style.footer}>opspiper © 2022 GSK</footer>
     </div>

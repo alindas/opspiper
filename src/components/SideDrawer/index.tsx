@@ -8,7 +8,9 @@ export default function SideDrawer(props: any) {
 
   return (
     <div>
-      <div className={style.placeholderOutside}
+      <div
+        id='intro-step5'
+        className={style.placeholderOutside}
         onMouseEnter={() => !ifShowDrawer && setIfShowDrawer(true)}
       />
       <Drawer
