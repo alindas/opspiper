@@ -1,6 +1,8 @@
 import request from '@/utils/request';
 
-const generalUrl = 'http://172.22.19.146:6600/api/v1/opspiper';
+const generalUrl = process.env.NODE_ENV === 'development'
+  ? 'http://192.168.200.201:6600/api/v1/opspiper'
+  : `${location.href}api/v1/opspiper`;
 
 // 通用请求, 任意 url
 const everQuery = ({ serverUrl, headers = {}, config = {} }) => request(serverUrl, { headers: { ...headers }, ...config });
