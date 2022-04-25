@@ -26,6 +26,7 @@ import { getFormateDate, getParentNode } from '@/utils/common';
 import Loading from '@/components/Loading';
 import SideDrawer from '@/components/SideDrawer';
 import emptyPic from '@/assets/empty.png';
+import StarrySky from '@/components/StarrySky/starrySky';
 
 const { Option } = Select;
 
@@ -714,6 +715,7 @@ export default function Deploy() {
 
   return (
     <div className={style.wrapper}>
+      <StarrySky />
       <section className={style.container}>
         <div className={style.server}>
           <div className={style.title}>
