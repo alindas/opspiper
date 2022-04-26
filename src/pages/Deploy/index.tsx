@@ -756,6 +756,7 @@ export default function Deploy() {
           options={{
             nextLabel: '下一个',
             prevLabel: '上一个',
+            skipLabel: '跳过',
             doneLabel: '了解了',
             hidePrev: true,
             exitOnEsc: false,
