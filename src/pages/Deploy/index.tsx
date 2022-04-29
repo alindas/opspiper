@@ -21,12 +21,12 @@ import "intro.js/introjs.css";
 
 import style from './index.less';
 import { generalQuery, everQuery } from '@/services';
-import FoldingBox from '@/components/FoldingBox';
+import FoldingBox from '@/components/folding-box';
 import { getFormateDate, getParentNode } from '@/utils/common';
-import Loading from '@/components/Loading';
-import SideDrawer from '@/components/SideDrawer';
+import Loading from '@/components/loading';
+import SideDrawer from '@/components/side-drawer';
 import emptyPic from '@/assets/empty.png';
-import StarrySky from '@/components/StarrySky/starrySky';
+import StarrySky from '@/components/starry-sky-pixi';
 
 const { Option } = Select;
 

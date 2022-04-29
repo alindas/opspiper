@@ -1,4 +1,4 @@
-import Deploy from "@/pages/Deploy";
+import Deploy from "@/pages/deploy";
 
 function App() {
 

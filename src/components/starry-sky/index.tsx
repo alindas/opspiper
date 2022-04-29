@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 
-import './starrySky.css';
+import './index.css';
 import star from './star.png';
 
 type TStar = {
