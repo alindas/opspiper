@@ -1,5 +1,6 @@
 import React from 'react';
 import style from './index.less';
+import circle from './loading.png';
 
 interface LoadingProps {
   type?: "line" | "circle" | 'orbit',
@@ -54,7 +55,7 @@ const Loading: React.FC<LoadingProps> = props => {
 
   const circleNode = (
     <span className={style[size]}>
-      <span className={style.circle}></span>
+      <img className={style.circle} src={circle} />
     </span>
   )
 
