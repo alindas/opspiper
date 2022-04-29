@@ -145,7 +145,7 @@ export default function Deploy() {
     })
       .then((res: Response | TServer[]) => {
         if (Array.isArray(res)) {
-          setServerList(res);
+          setTimeout(() => setServerList(res), 300);
           // 用户向导
           const isBaby = localStorage.getItem('ISB');
           if (isBaby === null) {
@@ -723,7 +723,11 @@ export default function Deploy() {
           </div>
           <div className={style.mainBox}>
             <Scrollbars>
-              <ul id='intro-step1'>{renderServerList}</ul>
+              {
+                renderServerList.length == 0 ?
+                <Loading type="orbit" layout="top" /> :
+                <ul id='intro-step1'>{renderServerList}</ul>
+              }
             </Scrollbars>
           </div>
         </div>

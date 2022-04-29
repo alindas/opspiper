@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import * as PIXI from 'pixi.js';
 
 import './index.css';
@@ -14,6 +14,9 @@ type TStar = {
 export default function StarrySkyPIXI() {
 
   useLayoutEffect(() => {
+    // 取消本地打印 pixijs 版本信息
+    PIXI.utils.skipHello();
+
     const app = new PIXI.Application({
       width: window.innerWidth,
       height: window.innerHeight,
