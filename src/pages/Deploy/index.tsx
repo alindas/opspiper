@@ -127,11 +127,14 @@ export default function Deploy() {
   const [serverList, setServerList] = useState<TServer[]>([]);
   const [Server, setServer] = useState<TServer>(InitialSERVER);
   const [projectList, setProjectList] = useState<TProject[]>([]);
-  const [loading, setLoading] = useState(true); // projectList 加载状态
-  const [handleType, setHandleType] = useState<HandleType>({ softwareType: '', buttonType: '', softwareName: '', isLoading: false }); // 软件包类型，按钮类型，软件名称，是否加载中
+  // projectList 加载状态
+  const [loading, setLoading] = useState(true);
+  /** 软件包类型，按钮类型，软件名称，是否加载中 */
+  const [handleType, setHandleType] = useState<HandleType>({ softwareType: '', buttonType: '', softwareName: '', isLoading: false });
   const [serverProject, setServerProject] = useState<TServerProject[]>([]);
   const [logCount, setLogCount] = useState(-1);
-  const [stepsEnabled, setStepsEnabled] = useState(false); // 用户功能向导是否可见
+  // 用户功能向导是否可见
+  const [stepsEnabled, setStepsEnabled] = useState(false);
 
   const [localForm] = Form.useForm();
 
@@ -347,6 +350,10 @@ export default function Deploy() {
       message.warn('请选择对应的服务主机');
       return;
     }
+    if (!checkCurrentUpload()) {
+      message.warning('尚有任务未结束');
+      return;
+    }
     setHandleType({ ...handleType, isLoading: true });
     switch (handleType.buttonType) {
       case 'install': handleType.softwareType === 'local' ? handleInstallAndUpgrade(form, '安装') : handleInstallAndUpgradeOnline(form, '安装'); break;
@@ -415,6 +422,15 @@ export default function Deploy() {
     setLogCount(logCount + 1);
   }
 
+  // 检查当前是否有进行中的任务
+  const checkCurrentUpload = () => {
+    if (handleType.isLoading) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   const renderActionBox = (type: TSoftware, software = '') => ([
     {
       value: 'install',
@@ -449,7 +465,9 @@ export default function Deploy() {
       <Button
         type="primary"
         size="small"
-        onClick={() => setHandleType({ softwareType: type, buttonType: btn.value, softwareName: software, isLoading: false })}
+        onClick={() => {
+          if (checkCurrentUpload()) setHandleType({ softwareType: type, buttonType: btn.value, softwareName: software, isLoading: false })
+        }}
         loading={handleType.softwareType === type && handleType.buttonType === btn.value && handleType.softwareName === software && handleType.isLoading}
         danger
       >
@@ -461,7 +479,9 @@ export default function Deploy() {
       type={btn.value === 'install' ? 'primary' : 'default'}
       size="small"
       htmlType="submit"
-      onClick={() => setHandleType({ softwareType: type, buttonType: btn.value, softwareName: software, isLoading: false })}
+      onClick={() => {
+        if (checkCurrentUpload()) setHandleType({ softwareType: type, buttonType: btn.value, softwareName: software, isLoading: false })
+      }}
       loading={handleType.softwareType === type && handleType.buttonType === btn.value && handleType.softwareName === software && handleType.isLoading}
     >
       {btn.comment}
