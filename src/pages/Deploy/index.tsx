@@ -145,12 +145,14 @@ export default function Deploy() {
     })
       .then((res: Response | TServer[]) => {
         if (Array.isArray(res)) {
-          setTimeout(() => setServerList(res), 300);
-          // 用户向导
-          const isBaby = localStorage.getItem('ISB');
-          if (isBaby === null) {
-            setStepsEnabled(true);
-          }
+          setTimeout(() => {
+            setServerList(res);
+            // 用户向导
+            const isBaby = localStorage.getItem('ISB');
+            if (isBaby === null) {
+              setStepsEnabled(true);
+            }
+          }, 300);
         }
       })
       .catch(err => console.warn(err))
@@ -715,7 +717,7 @@ export default function Deploy() {
 
   return (
     <div className={style.wrapper}>
-      <StarrySky />
+      {/* <StarrySky /> */}
       <section className={style.container}>
         <div className={style.server}>
           <div className={style.title}>
@@ -725,8 +727,8 @@ export default function Deploy() {
             <Scrollbars>
               {
                 renderServerList.length == 0 ?
-                <Loading type="orbit" layout="top" /> :
-                <ul id='intro-step1'>{renderServerList}</ul>
+                  <Loading type="orbit" layout="top" /> :
+                  <ul id='intro-step1'>{renderServerList}</ul>
               }
             </Scrollbars>
           </div>
