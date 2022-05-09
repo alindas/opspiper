@@ -75,41 +75,4 @@ request.interceptors.request.use((url, options) => {
   }
 });
 
-//#region
-/**
-
-// response拦截器, 处理response
-request.interceptors.response.use(async (response) => {
-  const { status } = response;
-  // 服务端返回 401 状态码，证明 Token 异常
-  if(status) {
-    const { url } = response;
-    if(status === 401) {
-      clearCookie({
-        name: hex_md5('gskUToken'),
-        domain: '',
-        path: '/'
-      });
-      setTimeout(() => {
-        window.location.href = '/#/login';
-      }, 1000);
-    }
-    else if(status === 400) {
-      // 去除不需要展示的业务模块
-      if(/user/.test(url)) return response;
-      const error = await response.text();
-      const formatError = formatTemplateString(error).split('@');
-      if(formatError.length === 1 && formatError[0] !== '') {
-        message.error(formatMessage({id: `antd.welder.request.${formatError[0]}`, defaultMessage: formatError[0]}))
-      }
-      else if(formatError.length === 2 && formatError[0] !== '') {
-        message.error(formatMessage({id: ``, defaultMessage: formatError}) + formatError[2])
-      }
-    }
-  }
-  return response;
-});
- */
-//#endregion
-
 export default request;
