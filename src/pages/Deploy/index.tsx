@@ -364,7 +364,7 @@ const handleInstallAndUpgradeOnline = (form: any, comment: string) => {
   })
     .then(async () => {
       const softwareLink = `${handleType.softwareType === 'release' ? release_repo : testing_repo}/${proj_name}/${version}.tar`;
-      const response = await fetch(softwareLink);
+      const response = await fetch(softwareLink).catch(res => res);
       if (!response.ok) {
         notification.error({
           message: '请求失败',
