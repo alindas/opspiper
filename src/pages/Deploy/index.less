@@ -144,11 +144,21 @@
   word-break: break-all;
 }
 
+.process-mask {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
 .footer {
   line-height: 25px;
   text-align: center;
   font-size: .75rem;
-  color: #fff;
+  // color: #fff;
+  color: #1a2a3a;
 }
 
 /** ant Design */
@@ -233,6 +243,18 @@
 :global .ant-timeline-item-head {
   width: 12px;
   height: 12px;
+}
+
+:global(.ant-btn-loading).show-progress {
+  > :global(span:not(.ant-btn-loading-icon)) {
+    color: transparent;
+  }
+  .process-mask {
+    bottom: -1px;
+    left: 23px;
+    opacity: 1;
+    transition: opacity .5s;
+  }
 }
 
 /** introjs 用户向导插件样式自定义 */

@@ -1,9 +1,9 @@
 /**
- * @describe 获取格式化的系统时间
+ * @name 获取格式化的系统时间
  * @param fmt Y+年份 M+月份 d+日 h+小时 m+分 s+秒 q+季度 S+毫秒
  * @returns 经过格式化的系统时间
  */
- const getFormateDate = function(fmt: string): string {
+const getFormateDate = function (fmt: string): string {
   let date = new Date();
   let o: {
     [index: string]: number
@@ -29,23 +29,59 @@
 }
 
 /**
- * @describe 递归获取子元素的父元素
+ * @name 递归获取子元素的父元素
  * @param ele 目标元素
  * @param nodeName 父元素名称
  * @returns 对应的父元素
  */
- const getParentNode = (ele: HTMLElement, nodeName: string): HTMLElement =>  {
+const getParentNode = (ele: HTMLElement, nodeName: string): HTMLElement => {
   let parentNode = ele.parentNode as HTMLElement | null;
-  if(parentNode === null) {
+  if (parentNode === null) {
     return document.body;
   }
-  else if(nodeName.toLocaleUpperCase() === parentNode.nodeName) {
+  else if (nodeName.toLocaleUpperCase() === parentNode.nodeName) {
     return parentNode;
   }
   else return getParentNode(parentNode, nodeName);
 }
 
+/**
+ * @name 基于 XMLHttpRequest 实现带有上传进度的请求
+ */
+const uploadRequestWithProcess = ({
+  url,
+  header,
+  data,
+  onProgress,
+  onSuccess,
+  onFail
+}: {
+  url: string,
+  data: any,
+  onProgress: (evt: ProgressEvent<EventTarget>, xhr: XMLHttpRequest) => void,
+  onSuccess: (xhr: XMLHttpRequest) => void,
+  onFail?: (status: number, message: string) => void,
+  header?: { [propsName: string]: string },
+}) => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('post', url, true);
+  for (let item in header??{}) {
+    xhr.setRequestHeader(item, header[item]);
+  }
+  xhr.onload = () => {
+    if (xhr.status != 200) {
+      onFail && onFail(xhr.status, xhr.responseText || xhr.statusText);
+    } else {
+      onSuccess(xhr);
+    }
+  }
+  xhr.onerror = () => onFail && onFail(xhr.status, xhr.responseText || xhr.statusText);
+  xhr.upload.onprogress = (evt) => onProgress(evt, xhr);
+  xhr.send(data);
+}
+
 export {
   getFormateDate,
-  getParentNode
+  getParentNode,
+  uploadRequestWithProcess
 }
