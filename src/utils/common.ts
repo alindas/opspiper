@@ -52,6 +52,7 @@ const uploadRequestWithProcess = ({
   url,
   header,
   data,
+  config,
   onProgress,
   onSuccess,
   onFail
@@ -62,8 +63,15 @@ const uploadRequestWithProcess = ({
   onSuccess: (xhr: XMLHttpRequest) => void,
   onFail?: (status: number, message: string) => void,
   header?: { [propsName: string]: string },
+  config?: {
+    timeout?: number | boolean,
+    responseType?: string,
+  }
 }) => {
   const xhr = new XMLHttpRequest();
+  if (config && typeof config.timeout == 'number') {
+    xhr.timeout = config.timeout;
+  }
   xhr.open('post', url, true);
   for (let item in header??{}) {
     xhr.setRequestHeader(item, header[item]);
@@ -76,6 +84,7 @@ const uploadRequestWithProcess = ({
     }
   }
   xhr.onerror = () => onFail && onFail(xhr.status, xhr.responseText || xhr.statusText);
+  xhr.ontimeout = () => onFail && onFail(xhr.status, '请求超时，请检查网络连接');
   xhr.upload.onprogress = (evt) => onProgress(evt, xhr);
   xhr.send(data);
 }
