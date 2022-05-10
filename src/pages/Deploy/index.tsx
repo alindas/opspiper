@@ -25,7 +25,7 @@ import FoldingBox from '@/components/folding-box';
 import { getFormateDate, getParentNode, uploadRequestWithProcess } from '@/utils/common';
 import Loading from '@/components/loading';
 import SideDrawer from '@/components/side-drawer';
-import emptyPic from '@/assets/empty.png';
+import emptyPic from '@/asset/empty.png';
 import StarrySky from '@/components/starry-sky-pixi';
 
 const { Option } = Select;
@@ -494,23 +494,23 @@ const checkCurrentUpload = () => {
 const renderActionBox = (type: TSoftware, software = '') => ([
   {
     value: 'install',
-    comment: '安装'
+    comment: '安 装'
   },
   {
     value: 'uninstall',
-    comment: '卸载'
+    comment: '卸 载'
   },
   {
     value: 'upgrade',
-    comment: '升级'
+    comment: '升 级'
   },
   {
     value: 'restart',
-    comment: '启动'
+    comment: '启 动'
   },
   {
     value: 'stop',
-    comment: '停止'
+    comment: '停 止'
   }
 ] as { value: TButton, comment: string }[]).map(btn => btn.value === 'uninstall' ? (
   <Popconfirm key={btn.value}
@@ -798,7 +798,7 @@ const renderOperationHistory = useMemo(() => {
 }, [logCount])
 
 return (
-  <div className={style.wrapper}>
+  <div className={style['outer-wrapper']}>
     {/* <StarrySky /> */}
     <section className={style.container}>
       <div className={style.server}>
