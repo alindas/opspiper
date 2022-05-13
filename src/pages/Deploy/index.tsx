@@ -310,378 +310,291 @@ export default function Deploy() {
       onFail: handleFail,
       onProgress: handleProgress
     })
-}
+  }
 
-// 处理除安装，更新外的请求
-const handleWithoutSoftware = (form: any, comment: string) => {
-  const { softWareName: name } = form;
-  everQuery({ serverUrl: `http://${Server.host}:${Server.port}/api/${handleType.buttonType}`, config: { method: 'POST', params: { name } } })
-    .then((res: Response | String) => {
-      // 返回的是字符串，表示成功操作
-      if (typeof res == 'string') {
-        notification.success({
-          message: `${comment}成功`,
-          description: <span>软件：<strong>{name}</strong> 在 <strong>{Server.note}</strong> 已{comment}</span>,
-          duration: 1.5
-        });
-        queryServerProject(Server);
-        recordLog(handleType.buttonType, `在${Server.note}上${comment}了软件${name}`);
-      }
-      else {
-        notification.error({
-          message: `${comment}失败`,
-          description: <span>服务器：<strong>{Server.note}</strong> 上不存在软件 <strong>{name}</strong></span>,
-          duration: 1.5
-        });
-      }
-      setTimeout(() => setHandleType({ ...handleType, isLoading: false }), 500);
-    })
-    .catch(error => {
-      notification.error({
-        message: '请求失败',
-        description: error,
-        duration: 1.5
-      });
-      setHandleType({ ...handleType, isLoading: false });
-    })
-}
-
-// 对于服务器仓库上项目的安装，更新
-const handleInstallAndUpgradeOnline = (form: any, comment: string) => {
-  const { version, no, proj_name, installationPath, release_repo, testing_repo } = form;
-  generalQuery({
-    "curd": "insert",
-    "table": "deploy_req",
-    "data": [
-      {
-        "dev_no": "gskserver000006",
-        "proj_no": no,
-        "proj_version": version,
-        "ee_id": "0000",
-        "cmd": handleType.buttonType
-      }
-    ]
-  })
-    .then(async () => {
-      const softwareLink = `${handleType.softwareType === 'release' ? release_repo : testing_repo}/${proj_name}/${version}.tar`;
-      const response = await fetch(softwareLink).catch(res => res);
-      if (!response.ok) {
+  // 处理除安装，更新外的请求
+  const handleWithoutSoftware = (form: any, comment: string) => {
+    const { softWareName: name } = form;
+    everQuery({ serverUrl: `http://${Server.host}:${Server.port}/api/${handleType.buttonType}`, config: { method: 'POST', params: { name } } })
+      .then((res: Response | String) => {
+        // 返回的是字符串，表示成功操作
+        if (typeof res == 'string') {
+          notification.success({
+            message: `${comment}成功`,
+            description: <span>软件：<strong>{name}</strong> 在 <strong>{Server.note}</strong> 已{comment}</span>,
+            duration: 1.5
+          });
+          queryServerProject(Server);
+          recordLog(handleType.buttonType, `在${Server.note}上${comment}了软件${name}`);
+        }
+        else {
+          notification.error({
+            message: `${comment}失败`,
+            description: <span>服务器：<strong>{Server.note}</strong> 上不存在软件 <strong>{name}</strong></span>,
+            duration: 1.5
+          });
+        }
+        setTimeout(() => setHandleType({ ...handleType, isLoading: false }), 500);
+      })
+      .catch(error => {
         notification.error({
           message: '请求失败',
-          description: '目标软件包资源丢失',
+          description: error,
           duration: 1.5
         });
         setHandleType({ ...handleType, isLoading: false });
-        return;
-      }
-      const installationPackage = await response.blob();
-      handleInstallAndUpgradeXML({ softWareName: proj_name, installationPackage, installationPath }, comment);
+      })
+  }
+
+  // 对于服务器仓库上项目的安装，更新
+  const handleInstallAndUpgradeOnline = (form: any, comment: string) => {
+    const { version, no, proj_name, installationPath, release_repo, testing_repo } = form;
+    generalQuery({
+      "curd": "insert",
+      "table": "deploy_req",
+      "data": [
+        {
+          "dev_no": "gskserver000006",
+          "proj_no": no,
+          "proj_version": version,
+          "ee_id": "0000",
+          "cmd": handleType.buttonType
+        }
+      ]
     })
-}
+      .then(async () => {
+        const softwareLink = `${handleType.softwareType === 'release' ? release_repo : testing_repo}/${proj_name}/${version}.tar`;
+        const response = await fetch(softwareLink).catch(res => res);
+        if (!response.ok) {
+          notification.error({
+            message: '请求失败',
+            description: '目标软件包资源丢失',
+            duration: 1.5
+          });
+          setHandleType({ ...handleType, isLoading: false });
+          return;
+        }
+        const installationPackage = await response.blob();
+        handleInstallAndUpgradeXML({ softWareName: proj_name, installationPackage, installationPath }, comment);
+      })
+  }
 
-// 对于服务器仓库上项目除安装，更新之外的功能
-const handleWithoutSoftwareOnline = (form: any, comment: string) => {
-  const { version, no, proj_name } = form;
-  generalQuery({
-    "curd": "insert",
-    "table": "deploy_req",
-    "data": [
-      {
-        "dev_no": "gskserver000006",
-        "proj_no": no,
-        "proj_version": version,
-        "ee_id": "0000",
-        "cmd": handleType.buttonType
-      }
-    ]
-  })
-    .then(() => {
-      handleWithoutSoftware({ softWareName: proj_name }, comment);
+  // 对于服务器仓库上项目除安装，更新之外的功能
+  const handleWithoutSoftwareOnline = (form: any, comment: string) => {
+    const { version, no, proj_name } = form;
+    generalQuery({
+      "curd": "insert",
+      "table": "deploy_req",
+      "data": [
+        {
+          "dev_no": "gskserver000006",
+          "proj_no": no,
+          "proj_version": version,
+          "ee_id": "0000",
+          "cmd": handleType.buttonType
+        }
+      ]
     })
-}
-
-const changeWarehouseLink = (link: string, ele: string) => {
-  const targetNode = document.querySelector(`input[name=${ele}]`)!;
-  targetNode.setAttribute('placeholder', link);
-}
-
-const handleSubmitSuccess = (form: any) => {
-  if (!Server.no) {
-    message.warn('请选择对应的服务主机');
-    return;
+      .then(() => {
+        handleWithoutSoftware({ softWareName: proj_name }, comment);
+      })
   }
-  if (!checkCurrentUpload()) {
-    message.warning('尚有任务未结束');
-    return;
-  }
-  setHandleType({ ...handleType, isLoading: true });
-  switch (handleType.buttonType) {
-    case 'install': handleType.softwareType === 'local' ? handleInstallAndUpgradeXML(form, '安装') : handleInstallAndUpgradeOnline(form, '安装'); break;
-    case 'upgrade': handleType.softwareType === 'local' ? handleInstallAndUpgradeXML(form, '更新') : handleInstallAndUpgradeOnline(form, '更新'); break;
-    case 'uninstall': handleType.softwareType === 'local' ? handleWithoutSoftware(form, '删除') : handleWithoutSoftwareOnline(form, '删除'); break;
-    case 'restart': handleType.softwareType === 'local' ? handleWithoutSoftware(form, '重启') : handleWithoutSoftwareOnline(form, '重启'); break;
-    case 'stop': handleType.softwareType === 'local' ? handleWithoutSoftware(form, '停止') : handleWithoutSoftwareOnline(form, '停止'); break;
-    default: break;
-  }
-}
 
-const handleSubmitFail = (value: any) => {
-  console.log('Fail', value);
-}
+  const changeWarehouseLink = (link: string, ele: string) => {
+    const targetNode = document.querySelector(`input[name=${ele}]`)!;
+    targetNode.setAttribute('placeholder', link);
+  }
 
-const queryServerProject = (server: TServer) => {
-  const { host, port } = server;
-  everQuery({
-    serverUrl: `http://${host}:${port}/api/list`
-  })
-    .then(res => {
-      if (Array.isArray(res)) {
-        setServerProject(res);
-      }
+  const handleSubmitSuccess = (form: any) => {
+    if (!Server.no) {
+      message.warn('请选择对应的服务主机');
+      return;
+    }
+    if (!checkCurrentUpload()) {
+      message.warning('尚有任务未结束');
+      return;
+    }
+    setHandleType({ ...handleType, isLoading: true });
+    switch (handleType.buttonType) {
+      case 'install': handleType.softwareType === 'local' ? handleInstallAndUpgradeXML(form, '安装') : handleInstallAndUpgradeOnline(form, '安装'); break;
+      case 'upgrade': handleType.softwareType === 'local' ? handleInstallAndUpgradeXML(form, '更新') : handleInstallAndUpgradeOnline(form, '更新'); break;
+      case 'uninstall': handleType.softwareType === 'local' ? handleWithoutSoftware(form, '删除') : handleWithoutSoftwareOnline(form, '删除'); break;
+      case 'restart': handleType.softwareType === 'local' ? handleWithoutSoftware(form, '重启') : handleWithoutSoftwareOnline(form, '重启'); break;
+      case 'stop': handleType.softwareType === 'local' ? handleWithoutSoftware(form, '停止') : handleWithoutSoftwareOnline(form, '停止'); break;
+      default: break;
+    }
+  }
+
+  const handleSubmitFail = (value: any) => {
+    console.log('Fail', value);
+  }
+
+  const queryServerProject = (server: TServer) => {
+    const { host, port } = server;
+    everQuery({
+      serverUrl: `http://${host}:${port}/api/list`
     })
-    .catch(() => null)
-}
-
-const selectServer = (server: TServer) => {
-  const { no } = server;
-  setServerProject([]); // 切换不同服务器时直接清空下拉项目列表，避免因网络延迟导致的假数据问题
-  if (Server.no === no) {
-    setServer(InitialSERVER);
+      .then(res => {
+        if (Array.isArray(res)) {
+          setServerProject(res);
+        }
+      })
+      .catch(() => null)
   }
-  else {
-    setServer(server);
-    queryServerProject(server);
-    localForm.resetFields();
+
+  const selectServer = (server: TServer) => {
+    const { no } = server;
+    setServerProject([]); // 切换不同服务器时直接清空下拉项目列表，避免因网络延迟导致的假数据问题
+    if (Server.no === no) {
+      setServer(InitialSERVER);
+    }
+    else {
+      setServer(server);
+      queryServerProject(server);
+      localForm.resetFields();
+    }
   }
-}
 
-const filterProjectNameInput = (inputValue: string, option: any) => {
-  return option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
-}
-
-const setLocalPacketPath = (name: string) => {
-  const path = serverProject.find(project => project.name === name)!.root;
-  localForm.setFieldsValue({ 'installationPath': path });
-}
-
-const recordLog = (type: TButton, desc: string) => {
-  const prefixLog = JSON.parse(localStorage.getItem('log')) as TLog[];
-  if (prefixLog !== null && !Array.isArray(prefixLog)) {
-    console.error('读取本地日志文件错误');
-    localStorage.removeItem('log');
-    return;
+  const filterProjectNameInput = (inputValue: string, option: any) => {
+    return option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
   }
-  let temp = prefixLog ?? [];
-  temp.unshift({
-    time: getFormateDate('yyyy-MM-dd hh:mm:ss'),
-    type,
-    desc
-  });
-  temp.length > 30 && temp.pop();
-  localStorage.setItem('log', JSON.stringify(temp))
-  setLogCount(logCount + 1);
-}
 
-// 检查当前是否有进行中的任务
-const checkCurrentUpload = () => {
-  if (handleType.isLoading) {
-    return false;
-  } else {
-    return true;
+  const setLocalPacketPath = (name: string) => {
+    const path = serverProject.find(project => project.name === name)!.root;
+    localForm.setFieldsValue({ 'installationPath': path });
   }
-}
 
-const renderActionBox = (type: TSoftware, software = '') => ([
-  {
-    value: 'install',
-    comment: '安 装'
-  },
-  {
-    value: 'uninstall',
-    comment: '卸 载'
-  },
-  {
-    value: 'upgrade',
-    comment: '升 级'
-  },
-  {
-    value: 'restart',
-    comment: '启 动'
-  },
-  {
-    value: 'stop',
-    comment: '停 止'
+  const recordLog = (type: TButton, desc: string) => {
+    const prefixLog = JSON.parse(localStorage.getItem('log')) as TLog[];
+    if (prefixLog !== null && !Array.isArray(prefixLog)) {
+      console.error('读取本地日志文件错误');
+      localStorage.removeItem('log');
+      return;
+    }
+    let temp = prefixLog ?? [];
+    temp.unshift({
+      time: getFormateDate('yyyy-MM-dd hh:mm:ss'),
+      type,
+      desc
+    });
+    temp.length > 30 && temp.pop();
+    localStorage.setItem('log', JSON.stringify(temp))
+    setLogCount(logCount + 1);
   }
-] as { value: TButton, comment: string }[]).map(btn => btn.value === 'uninstall' ? (
-  <Popconfirm key={btn.value}
-    title='此操作不可逆，是否继续？'
-    onConfirm={() => true}
-    onCancel={() => false}
-    okText='是'
-    cancelText='否'
-    okButtonProps={{ htmlType: 'submit' }}
-    getPopupContainer={(node) => getParentNode(node, 'form')}
-  >
-    <Button
-      type="primary"
+
+  // 检查当前是否有进行中的任务
+  const checkCurrentUpload = () => {
+    if (handleType.isLoading) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  const renderActionBox = (type: TSoftware, software = '') => ([
+    {
+      value: 'install',
+      comment: '安 装'
+    },
+    {
+      value: 'uninstall',
+      comment: '卸 载'
+    },
+    {
+      value: 'upgrade',
+      comment: '升 级'
+    },
+    {
+      value: 'restart',
+      comment: '启 动'
+    },
+    {
+      value: 'stop',
+      comment: '停 止'
+    }
+  ] as { value: TButton, comment: string }[]).map(btn => btn.value === 'uninstall' ? (
+    <Popconfirm key={btn.value}
+      title='此操作不可逆，是否继续？'
+      onConfirm={() => true}
+      onCancel={() => false}
+      okText='是'
+      cancelText='否'
+      okButtonProps={{ htmlType: 'submit' }}
+      getPopupContainer={(node) => getParentNode(node, 'form')}
+    >
+      <Button
+        type="primary"
+        size="small"
+        onClick={() => {
+          if (checkCurrentUpload()) setHandleType({ softwareType: type, buttonType: btn.value, softwareName: software, isLoading: false })
+        }}
+        loading={handleType.softwareType === type && handleType.buttonType === btn.value && handleType.softwareName === software && handleType.isLoading}
+        danger
+      >
+        {btn.comment}
+      </Button>
+    </Popconfirm>
+  ) :
+    <Button key={btn.value}
+      type={btn.value === 'install' ? 'primary' : 'default'}
       size="small"
+      htmlType="submit"
+      className={(btn.value === 'install' || btn.value === 'upgrade') ? style['show-progress'] : ''}
       onClick={() => {
         if (checkCurrentUpload()) setHandleType({ softwareType: type, buttonType: btn.value, softwareName: software, isLoading: false })
       }}
       loading={handleType.softwareType === type && handleType.buttonType === btn.value && handleType.softwareName === software && handleType.isLoading}
-      danger
     >
       {btn.comment}
-    </Button>
-  </Popconfirm>
-) :
-  <Button key={btn.value}
-    type={btn.value === 'install' ? 'primary' : 'default'}
-    size="small"
-    htmlType="submit"
-    className={(btn.value === 'install' || btn.value === 'upgrade') ? style['show-progress'] : ''}
-    onClick={() => {
-      if (checkCurrentUpload()) setHandleType({ softwareType: type, buttonType: btn.value, softwareName: software, isLoading: false })
-    }}
-    loading={handleType.softwareType === type && handleType.buttonType === btn.value && handleType.softwareName === software && handleType.isLoading}
-  >
-    {btn.comment}
-    <div className={style['process-mask']}>{speedProgress}</div>
-  </Button>)
+      <div className={style['process-mask']}>{speedProgress}</div>
+    </Button>)
 
-const renderServerList = serverList.map((server, index) => {
-  const { goarch, goos, host, port, no, note } = server;
-  const titleNode = (
-    <h3
-      style={Server.no === no ? { color: '#0080ff' } : {}}
-      onClick={() => selectServer(server)}
-    >
-      {index + 1}. {note}
-      <span className={style.ipTip}>{host + ':' + port}</span>
-      <CheckCircleOutlined
-        className={style.selectIcon}
-        style={Server.no === no ? { color: '#008000', opacity: 1 } : { color: '#aaa', opacity: 0 }}
-      />
-    </h3>
-  );
-  const contentNode = (
-    <ul className={style.listBox}>
-      <li>
-        <span>编号：</span>
-        <span>{no}</span>
-      </li>
-      <li>
-        <span>地址：</span>
-        <span>{host + ':' + port}</span>
-      </li>
-      <li>
-        <span>类型：</span>
-        <span>服务器</span>
-      </li>
-      <li>
-        <span>操作系统：</span>
-        <span>{goos}</span>
-      </li>
-      <li>
-        <span>CPU架构：</span>
-        <span>{goarch}</span>
-      </li>
-    </ul>
-  );
-  return <li key={no}><FoldingBox title={titleNode} content={contentNode} openClassName={style.openClass} /></li>
-});
-
-const localSoftWareContentNode = (
-  <div className={style.form}>
-    <Form
-      form={localForm}
-      labelCol={{ span: 3 }}
-      wrapperCol={{ span: 16 }}
-      initialValues={{ remember: true }}
-      autoComplete="off"
-      labelAlign="left"
-      onFinish={handleSubmitSuccess}
-      onFinishFailed={handleSubmitFail}
-    >
-      <Form.Item
-        label="名称"
-        name="softWareName"
-        rules={[{ required: true, message: '请输入软件包名称' }]}
+  const renderServerList = serverList.map((server, index) => {
+    const { goarch, goos, host, port, no, note } = server;
+    const titleNode = (
+      <h3
+        style={Server.no === no ? { color: '#0080ff' } : {}}
+        onClick={() => selectServer(server)}
       >
-        <AutoComplete
-          size="small"
-          allowClear
-          filterOption={filterProjectNameInput}
-          onSelect={(name: string) => setLocalPacketPath(name)}
-        >
-          {
-            serverProject.map(pro => (
-              <Option key={pro.id} value={pro.name}>
-                {pro.name}<span className={style.analysed} style={pro.active ? {} : { opacity: 0 }}>已启动</span>
-              </Option>
-            ))}
-        </AutoComplete>
-      </Form.Item>
-      <Form.Item
-        label="安装包"
-        name="installationPackage"
-        rules={[{ required: handleType.softwareType === 'local' && (handleType.buttonType === 'install' || handleType.buttonType === 'upgrade'), message: '请上传软件安装包' }]}
-        valuePropName="fileList"
-        getValueFromEvent={normFile}
-      >
-        <Upload.Dragger maxCount={1} beforeUpload={checkUploadFile} accept="application/x-tar">
-          <p className="ant-upload-text">拖拽 tar 文件到此处</p>
-          <Button type="primary" size="small" className={style.uploadFileBtn}>
-            浏览
-          </Button>
-        </Upload.Dragger>
-      </Form.Item>
-      <Form.Item
-        label="安装路径"
-        name="installationPath"
-        rules={[{ required: handleType.softwareType === 'local' && handleType.buttonType === 'install', message: '请输入准确的软件安装路径' }, checkUploadPath]}
-      >
-        <Input size="small" />
-      </Form.Item>
-      <Form.Item>
-        <Space>{renderActionBox('local')}</Space>
-      </Form.Item>
-    </Form>
-  </div>
-)
+        {index + 1}. {note}
+        <span className={style.ipTip}>{host + ':' + port}</span>
+        <CheckCircleOutlined
+          className={style.selectIcon}
+          style={Server.no === no ? { color: '#008000', opacity: 1 } : { color: '#aaa', opacity: 0 }}
+        />
+      </h3>
+    );
+    const contentNode = (
+      <ul className={style.listBox}>
+        <li>
+          <span>编号：</span>
+          <span>{no}</span>
+        </li>
+        <li>
+          <span>地址：</span>
+          <span>{host + ':' + port}</span>
+        </li>
+        <li>
+          <span>类型：</span>
+          <span>服务器</span>
+        </li>
+        <li>
+          <span>操作系统：</span>
+          <span>{goos}</span>
+        </li>
+        <li>
+          <span>CPU架构：</span>
+          <span>{goarch}</span>
+        </li>
+      </ul>
+    );
+    return <li key={no}><FoldingBox title={titleNode} content={contentNode} openClassName={style.openClass} /></li>
+  });
 
-const renderLocalSoftWare = (
-  <li id='intro-step2'>
-    <FoldingBox
-      title={<h3>1. 本地软件包</h3>}
-      content={localSoftWareContentNode}
-      openClassName={style.openClass}
-      defaultStatus={true}
-    />
-  </li>
-)
-
-const renderProjectList = (type: 'release' | 'testing') => projectList.map((project, index) => {
-  const {
-    no,
-    proj_name,
-    note,
-    release_repo,
-    testing_repo,
-  } = project;
-
-  const version = (type === 'release' ? project.release_version : project.testing_version).split('|');
-
-  const titleNode = (
-    <h3
-      style={Server.no === no ? { color: '#0080ff' } : {}}
-    >
-      {index + 1}) {proj_name}
-    </h3>
-  );
-  const contentNode = (
+  const localSoftWareContentNode = (
     <div className={style.form}>
       <Form
+        form={localForm}
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 16 }}
         initialValues={{ remember: true }}
@@ -691,170 +604,257 @@ const renderProjectList = (type: 'release' | 'testing') => projectList.map((proj
         onFinishFailed={handleSubmitFail}
       >
         <Form.Item
-          label="说明"
-          name="note"
-          initialValue={note}
+          label="名称"
+          name="softWareName"
+          rules={[{ required: true, message: '请输入软件包名称' }]}
         >
-          <Input size="small" disabled />
-        </Form.Item>
-        <Form.Item
-          label="版本"
-          name="version"
-          initialValue={version[0]}
-        >
-          <Select size="small" onChange={val => changeWarehouseLink(`${type === 'release' ? release_repo : testing_repo}/${proj_name}/${val}.tar`, `${type}-${proj_name}`)}>
+          <AutoComplete
+            size="small"
+            allowClear
+            filterOption={filterProjectNameInput}
+            onSelect={(name: string) => setLocalPacketPath(name)}
+          >
             {
-              version.map(version => (
-                <Option value={version} key={version}>{version}</Option>
-              ))
-            }
-          </Select>
+              serverProject.map(pro => (
+                <Option key={pro.id} value={pro.name}>
+                  {pro.name}<span className={style.analysed} style={pro.active ? {} : { opacity: 0 }}>已启动</span>
+                </Option>
+              ))}
+          </AutoComplete>
         </Form.Item>
         <Form.Item
           label="安装包"
+          name="installationPackage"
+          rules={[{ required: handleType.softwareType === 'local' && (handleType.buttonType === 'install' || handleType.buttonType === 'upgrade'), message: '请上传软件安装包' }]}
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
         >
-          <div>
-            <Input name={`${type}-${proj_name}`} size="small" disabled placeholder={`${type === 'release' ? release_repo : testing_repo}/${proj_name}/${version[0]}.tar`} />
-          </div>
+          <Upload.Dragger maxCount={1} beforeUpload={checkUploadFile} accept="application/x-tar">
+            <p className="ant-upload-text">拖拽 tar 文件到此处</p>
+            <Button type="primary" size="small" className={style.uploadFileBtn}>
+              浏览
+            </Button>
+          </Upload.Dragger>
         </Form.Item>
         <Form.Item
           label="安装路径"
           name="installationPath"
-          rules={[{ required: handleType.softwareType === type && handleType.buttonType === 'install' && handleType.softwareName === proj_name, message: '请输入准确的软件安装路径' }, checkUploadPath]}
+          rules={[{ required: handleType.softwareType === 'local' && handleType.buttonType === 'install', message: '请输入准确的软件安装路径' }, checkUploadPath]}
         >
-          <Input size="small" allowClear />
-        </Form.Item>
-        <Form.Item name="no" initialValue={no} hidden>
-          <Input size="small" />
-        </Form.Item>
-        <Form.Item name="proj_name" initialValue={proj_name} hidden>
-          <Input size="small" />
-        </Form.Item>
-        <Form.Item name="release_repo" initialValue={release_repo} hidden>
-          <Input size="small" />
-        </Form.Item>
-        <Form.Item name="testing_repo" initialValue={testing_repo} hidden>
           <Input size="small" />
         </Form.Item>
         <Form.Item>
-          <Space>{renderActionBox(type, proj_name)}</Space>
+          <Space>{renderActionBox('local')}</Space>
         </Form.Item>
       </Form>
     </div>
-  );
-  return <li key={no}><FoldingBox title={titleNode} content={contentNode} openClassName={style.openClass} /></li>
-});
+  )
 
-const renderReleaseRepositories = (
-  <li id='intro-step3'>
-    <FoldingBox
-      title={<h3>2. 发布仓库</h3>}
-      content={
-        <ul>
-          {loading ? <div className={style.loading}><Loading type="circle" layout="left" /></div>
-            : renderProjectList('release')}
-        </ul>
-      }
-      openClassName={style.openClass}
-      defaultStatus={true}
-    />
-  </li>
-)
-
-const renderTestRepositories = (
-  <li id='intro-step4'>
-    <FoldingBox
-      title={<h3>3. 测试仓库</h3>}
-      content={
-        <ul>
-          {loading ? <div className={style.loading}><Loading type="circle" layout="left" /></div>
-            : renderProjectList('testing')}
-        </ul>
-      }
-      openClassName={style.openClass}
-      defaultStatus={true}
-    />
-  </li>
-)
-
-// 增加本地日志记录
-const renderOperationHistory = useMemo(() => {
-  const logData = JSON.parse(localStorage.getItem('log')) as TLog[];
-  if (!Array.isArray(logData)) {
-    console.error('读取本地日志文件错误');
-    return <Empty image={emptyPic} description='暂无日志记录' />;
-  };
-  return logData.length == 0 ? <Empty image={emptyPic} description='暂无日志记录' />
-    : <Timeline>
-      {
-        logData.map((log, index) =>
-          <Timeline.Item color={typeToColor(log.type)} key={index}>
-            <p className={style.logLabel}><small>{log.time}</small></p>
-            <p className={style.logBody}>{log.desc}</p>
-          </Timeline.Item>
-        )
-      }
-    </Timeline>
-}, [logCount])
-
-return (
-  <div className={style['outer-wrapper']}>
-    {/* <StarrySky /> */}
-    <section className={style.container}>
-      <div className={style.server}>
-        <div className={style.title}>
-          <h1>选择服务器：{Server.note}</h1>
-        </div>
-        <div className={style.mainBox}>
-          <Scrollbars>
-            {
-              renderServerList.length == 0 ?
-                <Loading type="orbit" layout="top" /> :
-                <ul id='intro-step1'>{renderServerList}</ul>
-            }
-          </Scrollbars>
-        </div>
-      </div>
-      <div className={style.hedge} />
-      <div className={style.softWare}>
-        <div className={style.title}>
-          <h1>选择软件包：</h1>
-        </div>
-        <div className={style.mainBox}>
-          <Scrollbars>
-            <ul>
-              {renderLocalSoftWare}
-              {renderReleaseRepositories}
-              {renderTestRepositories}
-            </ul>
-          </Scrollbars>
-        </div>
-      </div>
-      <SideDrawer>
-        <div style={{ padding: '10px' }}>
-          {renderOperationHistory}
-        </div>
-      </SideDrawer>
-      <Steps
-        enabled={stepsEnabled}
-        steps={guideSteps}
-        initialStep={0}
-        onExit={() => setStepsEnabled(false)}
-        onComplete={() => localStorage.setItem('ISB', 'false')}
-        options={{
-          nextLabel: '下一个',
-          prevLabel: '上一个',
-          skipLabel: '跳过',
-          doneLabel: '了解了',
-          hidePrev: true,
-          exitOnEsc: false,
-          exitOnOverlayClick: false,
-          disableInteraction: true,
-          showBullets: false
-        }}
+  const renderLocalSoftWare = (
+    <li id='intro-step2'>
+      <FoldingBox
+        title={<h3>1. 本地软件包</h3>}
+        content={localSoftWareContentNode}
+        openClassName={style.openClass}
+        defaultStatus={true}
       />
-    </section>
-    <footer className={style.footer}>opspiper © 2022 GSK</footer>
-  </div>
-)
+    </li>
+  )
+
+  const renderProjectList = (type: 'release' | 'testing') => projectList.map((project, index) => {
+    const {
+      no,
+      proj_name,
+      note,
+      release_repo,
+      testing_repo,
+    } = project;
+
+    const version = (type === 'release' ? project.release_version : project.testing_version).split('|');
+
+    const titleNode = (
+      <h3
+        style={Server.no === no ? { color: '#0080ff' } : {}}
+      >
+        {index + 1}) {proj_name}
+      </h3>
+    );
+    const contentNode = (
+      <div className={style.form}>
+        <Form
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 16 }}
+          initialValues={{ remember: true }}
+          autoComplete="off"
+          labelAlign="left"
+          onFinish={handleSubmitSuccess}
+          onFinishFailed={handleSubmitFail}
+        >
+          <Form.Item
+            label="说明"
+            name="note"
+            initialValue={note}
+          >
+            <Input size="small" disabled />
+          </Form.Item>
+          <Form.Item
+            label="版本"
+            name="version"
+            initialValue={version[0]}
+          >
+            <Select size="small" onChange={val => changeWarehouseLink(`${type === 'release' ? release_repo : testing_repo}/${proj_name}/${val}.tar`, `${type}-${proj_name}`)}>
+              {
+                version.map(version => (
+                  <Option value={version} key={version}>{version}</Option>
+                ))
+              }
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="安装包"
+          >
+            <div>
+              <Input name={`${type}-${proj_name}`} size="small" disabled placeholder={`${type === 'release' ? release_repo : testing_repo}/${proj_name}/${version[0]}.tar`} />
+            </div>
+          </Form.Item>
+          <Form.Item
+            label="安装路径"
+            name="installationPath"
+            rules={[{ required: handleType.softwareType === type && handleType.buttonType === 'install' && handleType.softwareName === proj_name, message: '请输入准确的软件安装路径' }, checkUploadPath]}
+          >
+            <Input size="small" allowClear />
+          </Form.Item>
+          <Form.Item name="no" initialValue={no} hidden>
+            <Input size="small" />
+          </Form.Item>
+          <Form.Item name="proj_name" initialValue={proj_name} hidden>
+            <Input size="small" />
+          </Form.Item>
+          <Form.Item name="release_repo" initialValue={release_repo} hidden>
+            <Input size="small" />
+          </Form.Item>
+          <Form.Item name="testing_repo" initialValue={testing_repo} hidden>
+            <Input size="small" />
+          </Form.Item>
+          <Form.Item>
+            <Space>{renderActionBox(type, proj_name)}</Space>
+          </Form.Item>
+        </Form>
+      </div>
+    );
+    return <li key={no}><FoldingBox title={titleNode} content={contentNode} openClassName={style.openClass} /></li>
+  });
+
+  const renderReleaseRepositories = (
+    <li id='intro-step3'>
+      <FoldingBox
+        title={<h3>2. 发布仓库</h3>}
+        content={
+          <ul>
+            {loading ? <div className={style.loading}><Loading type="circle" layout="left" /></div>
+              : renderProjectList('release')}
+          </ul>
+        }
+        openClassName={style.openClass}
+        defaultStatus={true}
+      />
+    </li>
+  )
+
+  const renderTestRepositories = (
+    <li id='intro-step4'>
+      <FoldingBox
+        title={<h3>3. 测试仓库</h3>}
+        content={
+          <ul>
+            {loading ? <div className={style.loading}><Loading type="circle" layout="left" /></div>
+              : renderProjectList('testing')}
+          </ul>
+        }
+        openClassName={style.openClass}
+        defaultStatus={true}
+      />
+    </li>
+  )
+
+  // 增加本地日志记录
+  const renderOperationHistory = useMemo(() => {
+    const logData = JSON.parse(localStorage.getItem('log')) as TLog[];
+    if (!Array.isArray(logData)) {
+      console.error('读取本地日志文件错误');
+      return <Empty image={emptyPic} description='暂无日志记录' />;
+    };
+    return logData.length == 0 ? <Empty image={emptyPic} description='暂无日志记录' />
+      : <Timeline>
+        {
+          logData.map((log, index) =>
+            <Timeline.Item color={typeToColor(log.type)} key={index}>
+              <p className={style.logLabel}><small>{log.time}</small></p>
+              <p className={style.logBody}>{log.desc}</p>
+            </Timeline.Item>
+          )
+        }
+      </Timeline>
+  }, [logCount])
+
+  return (
+    <div className={style['outer-wrapper']}>
+      {/* <StarrySky /> */}
+      <section className={style.container}>
+        <div className={style.server}>
+          <div className={style.title}>
+            <h1>选择服务器：{Server.note}</h1>
+          </div>
+          <div className={style.mainBox}>
+            <Scrollbars>
+              {
+                renderServerList.length == 0 ?
+                  <Loading type="orbit" layout="top" /> :
+                  <ul id='intro-step1'>{renderServerList}</ul>
+              }
+            </Scrollbars>
+          </div>
+        </div>
+        <div className={style.hedge} />
+        <div className={style.softWare}>
+          <div className={style.title}>
+            <h1>选择软件包：</h1>
+          </div>
+          <div className={style.mainBox}>
+            <Scrollbars>
+              <ul>
+                {renderLocalSoftWare}
+                {renderReleaseRepositories}
+                {renderTestRepositories}
+              </ul>
+            </Scrollbars>
+          </div>
+        </div>
+        <SideDrawer>
+          <div style={{ padding: '10px' }}>
+            {renderOperationHistory}
+          </div>
+        </SideDrawer>
+        <Steps
+          enabled={stepsEnabled}
+          steps={guideSteps}
+          initialStep={0}
+          onExit={() => setStepsEnabled(false)}
+          onComplete={() => localStorage.setItem('ISB', 'false')}
+          options={{
+            nextLabel: '下一个',
+            prevLabel: '上一个',
+            skipLabel: '跳过',
+            doneLabel: '了解了',
+            hidePrev: true,
+            exitOnEsc: false,
+            exitOnOverlayClick: false,
+            disableInteraction: true,
+            showBullets: false
+          }}
+        />
+      </section>
+      <footer className={style.footer}>opspiper © 2022 GSK</footer>
+    </div>
+  )
 }
