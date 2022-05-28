@@ -260,8 +260,9 @@ export default function Deploy() {
   const handleInstallAndUpgradeXML = (form: any, comment: string) => {
     const { softWareName: name, installationPackage, installationPath: root } = form;
     const headerConfig = {
-      "Content-Type": "application/octet-stream;charset=UTF-8",
-      "Options": handleType.buttonType === 'install' ? JSON.stringify({
+      'Content-Type': 'application/octet-stream;charset=UTF-8',
+      'Authorization': '6eb899149f77f733a0cb3eda62300f64',
+      'Options': handleType.buttonType === 'install' ? JSON.stringify({
         name: encodeURIComponent(name),
         root: encodeURIComponent(root),
       }) : ''
