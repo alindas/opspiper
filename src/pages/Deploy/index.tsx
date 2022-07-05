@@ -26,7 +26,6 @@ import { getFormateDate, getParentNode, uploadRequestWithProcess } from '@/utils
 import Loading from '@/components/loading';
 import SideDrawer from '@/components/side-drawer';
 import emptyPic from '@/asset/empty.png';
-import StarrySky from '@/components/starry-sky-pixi';
 
 const { Option } = Select;
 
@@ -190,7 +189,7 @@ export default function Deploy() {
   };
 
   const checkUploadFile = (file: File) => {
-    if (!/\.tar$/.test(file.name)) {
+    if (!/\.(tar$)|(zip$)/.test(file.name)) {
       return Upload.LIST_IGNORE
     }
     return false;
@@ -259,8 +258,9 @@ export default function Deploy() {
   // 处理安装，更新请求（使用 XMLHttpRequest）
   const handleInstallAndUpgradeXML = (form: any, comment: string) => {
     const { softWareName: name, installationPackage, installationPath: root } = form;
+    const type = Array.isArray(installationPackage) ? installationPackage[0].type : 'application/x-tar';
     const headerConfig = {
-      'Content-Type': 'application/octet-stream;charset=UTF-8',
+      'Content-Type': `${type};charset=UTF-8`,
       'Authorization': '6eb899149f77f733a0cb3eda62300f64',
       'Options': handleType.buttonType === 'install' ? JSON.stringify({
         name: encodeURIComponent(name),
@@ -630,8 +630,11 @@ export default function Deploy() {
           valuePropName="fileList"
           getValueFromEvent={normFile}
         >
-          <Upload.Dragger maxCount={1} beforeUpload={checkUploadFile} accept="application/x-tar">
-            <p className="ant-upload-text">拖拽 tar 文件到此处</p>
+          <Upload.Dragger maxCount={1}
+            beforeUpload={checkUploadFile}
+            accept="application/x-tar, application/zip"
+          >
+            <p className="ant-upload-text">拖拽 tar、zip 文件到此处</p>
             <Button type="primary" size="small" className={style.uploadFileBtn}>
               浏览
             </Button>
