@@ -858,7 +858,7 @@ export default function Deploy() {
           }}
         />
       </section>
-      <footer className={style.footer}>opspiper © 2022 GSK</footer>
+      <footer className={style.footer}>opspiper © 2022 今童志敏</footer>
     </div>
   )
 }
